@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournoi de Fléchettes FPE</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+        .container {
+            width: 95%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #2c7873;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-bottom: 5px solid #1a4645;
+        }
+        h1 {
+            margin: 0;
+            font-size: 2.2em;
+        }
+        .tournament-info {
+            text-align: center;
+            padding: 10px;
+            background-color: #e6f3f2;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .tournament-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .round {
+            flex: 1;
+            min-width: 200px;
+            margin: 10px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .round h3 {
+            text-align: center;
+            padding-bottom: 10px;
+            margin-top: 0;
+            border-bottom: 2px solid #2c7873;
+            color: #2c7873;
+        }
+        .match {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border-left: 4px solid #2c7873;
+        }
+        .player {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 5px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+        .player:first-child {
+            border-bottom: 1px dashed #ddd;
+        }
+        .player.winner {
+            background-color: #e6f3f2;
+            font-weight: bold;
+        }
+        .player-name {
+            flex: 2;
+        }
+        .player-score {
+            flex: 1;
+            text-align: center;
+            font-weight: bold;
+        }
+        .bet-button {
+            flex: 1;
+            text-align: right;
+        }
+        .bet-button button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .bet-button button:hover {
+            background-color: #2980b9;
+        }
+        .bet-form {
+            display: none;
+            padding: 10px;
+            background-color: #eee;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .bet-form.active {
+            display: block;
+        }
+        .bet-form input {
+            width: 60%;
+            padding: 5px;
+            margin-right: 5px;
+        }
+        .bet-form button {
+            padding: 5px 10px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .bet-form button:hover {
+            background-color: #27ae60;
+        }
+        .bet-status {
+            margin-top: 5px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .betting-summary {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        .betting-summary h3 {
+            color: #2c7873;
+            border-bottom: 2px solid #2c7873;
+            padding-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #e6f3f2;
+            border-radius: 5px;
+        }
+        @media (max-width: 768px) {
+            .tournament-container {
+                flex-direction: column;
+            }
+            .round {
+                min-width: 100%;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>TOURNOI DE FLÉCHETTES FPE</h1>
+    </header>
+    <div class="container">
+        <div class="tournament-info">
+            <p>Suivez les résultats du tournoi en direct et placez vos paris!</p>
+            <p><strong>Cagnotte actuelle:</strong> <span id="pot">1000</span> points</p>
+        </div>
+
+        <div class="tournament-container">
+            <!-- Huitièmes de finale -->
+            <div class="round">
+                <h3>1/8 de Finale</h3>
+                <div class="match" id="match1">
+                    <div class="player">
+                        <div class="player-name">Anthony M. (3)</div>
+                        <div class="player-score">-</div>
+                        <div class="bet-button">
+                            <button onclick="toggleBetForm('bet-form1-1')">Parier</button>
+                        </div>
+                    </div>
+                    <div class="player">
+                        <div class="player-name">Anthony G. (8)</div>
+                        <div class="player-score">-</div>
+                        <div class="bet-button">
+                            <button onclick="toggleBetForm('bet-form1-2')">Parier</button>
+                        </div>
+                    </div>
+                    <div class="bet-form" id="bet-form1-1">
+                        <input type="number" placeholder="Montant du pari" min="10">
+                        <button onclick="placeBet('match1', 0)">Confirmer</button>
+                        <div class="bet-status" id="bet-status1-1"></div>
+                    </div>
+                    <div class="bet-form" id="bet-form1-2">
+                        <input type="number" placeholder="Montant du pari" min="10">
+                        <button onclick="placeBet('match1', 1)">Confirmer</button>
+                        <div class="bet-status" id="bet-status1-2"></div>
+                    </div>
+                </div>
+                <div class="match" id="match2">
+                    <div class="player winner">
+                        <div class="player-name">Arnaud (1)</div>
+                        <div class="player-score">V</div>
+                        <div class="bet-button">
+                            <button disabled>Terminé</button>
+                        </div>
+                    </div>
+                    <div class="player">
+                        <div class="player-name">-</div>
+                        <div class="player-score">-</div>
+                        <div class="bet-button"></div>
+                    </div>
+                </div>
+                <div class="match" id="match3">
+                    <div class="player">
+                        <div class="player-name">Wahiba (5)</div>
+                        <div class="player-score">-</div>
+                        <div class="bet-button">
+                            <button onclick="toggleBetForm('bet-form3-1')">Parier</button>
+                        </div>
+                    </div>
+                    <div class="player">
+                        <div class="player-name">Maïté (4)</div>
+                        <div class="player-score">-</div>
+                        <div class="bet-button">
+                            <button onclick="toggleBetForm('bet-form3-2')">Parier</button>
+                        </div>
+                    </div>
+                    <div class="bet-form" id="bet-form3-1">
+                        <input type="number" placeholder="Montant du pari" min="10">
+                        <button onclick="placeBet('match3', 0)">Confirmer</button>
+                        <div class="bet-status" id="bet-status3-1"></div>
+                    </div>
+                    <div class="bet-form" id="bet-form3-2">
+                        <input type="number" placeholder="Montant du pari" min="10">
+                        <button onclick="placeBet('match3', 1)">Confirmer</button>
+                        <div class="bet-status" id="bet-status3-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quarts de finale -->
+            <div class="round">
+                <h3>1/4 de Finale</h3>
+                <div class="match" id="match4">
+                    <div class="player">
+                        <div class="player-name">?</div>
+                        <div class="player-score">-</div>
+                        <div class="bet-button">
+                            <button disabled>En attente</button>
+                        </div>
+                    </div>
+                    <div class="player winner">
+                        <div class="player-name">Arnaud (1)</div>
+                        <div class="player-score">-</div>
+                        <div class="bet-button">
+                            <button disabled>En attente</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="match" id="match5">
+                    <div class="player winner">
+                        <div class="player-name">Wahiba (5)</div>
+                        <div class="player-score">-</div>
+                        <div class="bet-button">
+                            <button onclick="toggleBetForm('bet-form5-1')">Parier</button>
+                        </div>
+                    </div>
+                    <div class="player">
+                        <div class="player-name">Maïté (4)</div>
+                        <div class="player-score">-</div>
+                        <div class="bet-button">
+                            <button onclick="toggleBetForm('bet-form5-2')">Parier</button>
+                        </div>
+                    </div>
+                    <div class="bet-form" id="bet-form5-1">
+                        <input type="number" placeholder="Montant du pari" min="10">
+                        <button onclick="placeBet('match5', 0)">Confirmer</button>
+                        <div class="bet-status" id="bet-status5-1"></div>
+                    </div>
+                    <div class="bet-form" id="bet-form5-2">
+                        <input type="number" placeholder="Montant du pari" min="10">
+                        <button onclick="placeBet('match5', 1)">Confirmer</button>
+                        <div class="bet-status" id="bet-status5-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Demi-finales -->
+            <div class="round">
+                <h3>1/2 Finale</h3>
+                <div class="match" id="match6">
+                    <div class="player">
+                        <div class="player-name">?</div>
+                        <div class="player-score">-</div>
+                        <div class="bet-button">
+                            <button disabled>En attente</button>
+                        </div>
+                    </div>
+                    <div class="player">
+                        <div class="player-name">?</div>
+                        <div class="player-score">-</div>
+                        <div class="bet-button">
+                            <button disabled>En attente</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="match" id="match7">
+                    <div class="player">
+                        <div class="player-name">?</div>
+                        <div class="player-score">-</div>
+                        <div class="bet-button">
+                            <button disabled>En attente</button>
+                        </div>
+                    </div>
+                    <div class="player">
+                        <div class="player-name">?</div>
+                        <div class="player-score">-</div>
+                        <div class="bet-button">
+                            <button disabled>En attente</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Finale -->
+            <div class="round">
+                <h3>Finale</h3>
+                <div class="match" id="match8">
+                    <div class="player">
+                        <div class="player-name">?</div>
+                        <div class="player-score">-</div>
+                        <div class="bet-button">
+                            <button disabled>En attente</button>
+                        </div>
+                    </div>
+                    <div class="player">
+                        <div class="player-name">?</div>
+                        <div class="player-score">-</div>
+                        <div class="bet-button">
+                            <button disabled>En attente</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deuxième partie du tableau -->
+        <div class="tournament-container">
+            <!-- Huitièmes de finale côté droit -->
+            <div class="round">
+                <h3>1/8 de Finale</h3>
+                <div class="match" id="match9">
+                    <div class="player">
+                        <div class="player-name">Juliette (9)</div>
+                        <div class="player-score">-</div>
+                        <div class="bet-button">
+                            <button onclick="toggleBetForm('bet-form9-1')">Parier</button>
+                        </div>
+                    </div>
+                    <div class="player">
+                        <div class="player-name">Alexandre P. (2)</div>
+                        <div class="player-score">-</div>
+                        <div class="bet-button">
+                            <button onclick="toggleBetForm('bet-form9-2')">Parier</button>
+                        </div>
+                    </div>
+                    <div class="bet-form" id="bet-form9-1">
+                        <input type="number" placeholder="Montant du pari" min="10">
+                        <button onclick="placeBet('match9', 0)">Confirmer</button>
+                        <div class="bet-status" id="bet-status9-1"></div>
+                    </div>
+                    <div class="bet-form" id="bet-form9-2">
+                        <input type="number" placeholder="Montant du pari" min="10">
+                        <button onclick="placeBet('match9', 1)">Confirmer</button>
+                        <div class="bet-status" id="bet-status9-2"></div>
+                    </div>
+                </div>
+                <div class="match" id="match10">
+                    <div class="player winner">
+                        <div class="player-name">Alexandre D.C. (6)</div>
+                        <div class="player-score">V</div>
+                        <div class="bet-button">
+                            <button disabled>Terminé</button>
+                        </div>
+                    </div>
+                    <div class="player">
+                        <div class="player-name">-</div>
+                        <div class="player-score">-</div>
+                        <div class="bet-button"></div>
+                    </div>
+                </div>
+                <div class="match" id="match11">
+                    <div class="player">
+                        <div class="player-name">Christophe (10)</div>
+                        <div class="player-score">-</div>
+                        <div class="bet-button">
+                            <button onclick="toggleBetForm('bet-form11-1')">Parier</button>
+                        </div>
+                    </div>
+                    <div class="player">
+                        <div class="player-name">Maëlys (7)</div>
+                        <div class="player-score">-</div>
+                        <div class="bet-button">
+                            <button onclick="toggleBetForm('bet-form11-2')">Parier</button>
+                        </div>
+                    </div>
+                    <div class="bet-form" id="bet-form11-1">
+                        <input type="number" placeholder="Montant du pari" min="10">
+                        <button onclick="placeBet('match11', 0)">Confirmer</button>
+                        <div class="bet-status" id="bet-status11-1"></div>
+                    </div>
+                    <div class="bet-form" id="bet-form11-2">
+                        <input type="number" placeholder="Montant du pari" min="10">
+                        <button onclick="placeBet('match11', 1)">Confirmer</button>
+                        <div class="bet-status" id="bet-status11-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quarts de finale côté droit -->
+            <div class="round">
+                <h3>1/4 de Finale</h3>
+                <div class="match" id="match12">
+                    <div class="player">
+                        <div class="player-name">?</div>
+                        <div class="player-score">-</div>
+                        <div class="bet-button">
+                            <button disabled>En attente</button>
+                        </div>
+                    </div>
+                    <div class="player winner">
+                        <div class="player-name">Alexandre D.C. (6)</div>
+                        <div class="player-score">-</div>
+                        <div class="bet-button">
+                            <button disabled>En attente</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="match" id="match13">
+                    <div class="player">
+                        <div class="player-name">Christophe (10)</div>
+                        <div class="player-score">-</div>
+                        <div class="bet-button">
+                            <button onclick="toggleBetForm('bet-form13-1')">Parier</button>
+                        </div>
+                    </div>
+                    <div class="player">
+                        <div class="player-name">Maëlys (7)</div>
+                        <div class="player-score">-</div>
+                        <div class="bet-button">
+                            <button onclick="toggleBetForm('bet-form13-2')">Parier</button>
+                        </div>
+                    </div>
+                    <div class="bet-form" id="bet-form13-1">
+                        <input type="number" placeholder="Montant du pari" min="10">
+                        <button onclick="placeBet('match13', 0)">Confirmer</button>
+                        <div class="bet-status" id="bet-status13-1"></div>
+                    </div>
+                    <div class="bet-form" id="bet-form13-2">
+                        <input type="number" placeholder="Montant du pari" min="10">
+                        <button onclick="placeBet('match13', 1)">Confirmer</button>
+                        <div class="bet-status" id="bet-status13-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="betting-summary">
+            <h3>Mes Paris</h3>
+            <table id="bets-table">
+                <thead>
+                    <tr>
+                        <th>Match</th>
+                        <th>Joueur</th>
+                        <th>Montant</th>
+                        <th>Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Les paris seront ajoutés ici dynamiquement -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 Tournoi de Fléchettes FPE - Application de suivi et paris</p>
+        </div>
+    </div>
+
+    <script>
+        // Variables pour stocker les données
+        let userPoints = 1000;
+        let bets = [];
+        let players = {
+            'match1': ['Anthony M. (3)', 'Anthony G. (8)'],
+            'match2': ['Arnaud (1)', ''],
+            'match3': ['Wahiba (5)', 'Maïté (4)'],
+            'match4': ['', 'Arnaud (1)'],
+            'match5': ['Wahiba (5)', 'Maïté (4)'],
+            'match6': ['', ''],
+            'match7': ['', ''],
+            'match8': ['', ''],
+            'match9': ['Juliette (9)', 'Alexandre P. (2)'],
+            'match10': ['Alexandre D.C. (6)', ''],
+            'match11': ['Christophe (10)', 'Maëlys (7)'],
+            'match12': ['', 'Alexandre D.C. (6)'],
+            'match13': ['Christophe (10)', 'Maëlys (7)']
+        };
+
+        // Fonction pour afficher/masquer le formulaire de pari
+        function toggleBetForm(formId) {
+            const form = document.getElementById(formId);
+            if (form.classList.contains('active')) {
+                form.classList.remove('active');
+            } else {
+                // Masquer tous les autres formulaires actifs
+                document.querySelectorAll('.bet-form.active').forEach(f => {
+                    f.classList.remove('active');
+                });
+                form.classList.add('active');
+            }
+        }
+
+        // Fonction pour placer un pari
+        function placeBet(matchId, playerIndex) {
+            const formId = `bet-form${matchId.replace('match', '')}-${playerIndex + 1}`;
+            const input = document.querySelector(`#${formId} input`);
+            const amount = parseInt(input.value);
+            const statusElement = document.getElementById(`bet-status${matchId.replace('match', '')}-${playerIndex + 1}`);
+            
+            // Vérifications
+            if (isNaN(amount) || amount < 10) {
+                statusElement.textContent = "Minimum 10 points requis";
+                statusElement.style.color = "red";
+                return;
+            }
+            
+            if (amount > userPoints) {
+                statusElement.textContent = "Points insuffisants";
+                statusElement.style.color = "red";
+                return;
+            }
+            
+            // Enregistrer le pari
+            const playerName = players[matchId][playerIndex];
+            const bet = {
+                id: bets.length + 1,
+                match: matchId,
+                player: playerName,
+                amount: amount,
+                status: "En attente"
+            };
+            
+            bets.push(bet);
+            userPoints -= amount;
+            
+            // Mettre à jour l'affichage
+            document.getElementById('pot').textContent = userPoints;
+            updateBetsTable();
+            
+            // Confirmation
+            statusElement.textContent = "Pari placé!";
+            statusElement.style.color = "green";
+            
+            // Réinitialiser le formulaire
+            input.value = "";
+            setTimeout(() => {
+                toggleBetForm(formId);
+                statusElement.textContent = "";
+            }, 2000);
+            
+            // Simuler des résultats aléatoires après 5 secondes
+            if (Math.random() > 0.5) {
+                setTimeout(() => {
+                    simulateMatchResult(matchId);
+                }, 5000);
+            }
+        }
+
+        // Fonction pour mettre à jour le tableau des paris
+        function updateBetsTable() {
+            const tbody = document.querySelector('#bets-table tbody');
+            tbody.innerHTML = '';
+            
+            if (bets.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = '<td colspan="4">Aucun pari pour le moment</td>';
+                tbody.appendChild(tr);
+                return;
+            }
+            
+            bets.forEach(bet => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${bet.match.replace('match', 'Match ')}</td>
+                    <td>${bet.player}</td>
+                    <td>${bet.amount}</td>
+                    <td>${bet.status}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Fonction pour simuler un résultat de match
+        function simulateMatchResult(matchId) {
+            const match = document.getElementById(matchId);
+            const players = match.querySelectorAll('.player');
+            const winner = Math.floor(Math.random() * 2);
+            
+            // Marquer le gagnant
+            players[winner].classList.add('winner');
+            players[winner].querySelector('.player-score').textContent = 'V';
+            players[1-winner].querySelector('.player-score').textContent = '-';
+            
+            // Désactiver les boutons de pari
+            players.forEach(player => {
+                const button = player.querySelector('button');
+                if (button) {
+                    button.textContent = 'Terminé';
+                    button.disabled = true;
+                }
+            });
+            
+            // Mettre à jour les paris
+            bets.forEach(bet => {
+                if (bet.match === matchId) {
+                    const isWinner = bet.player === players[winner].querySelector('.player-name').textContent;
+                    if (isWinner) {
+                        bet.status = "Gagné! +" + (bet.amount * 2);
+                        userPoints += bet.amount * 2;
+                    } else {
+                        bet.status = "Perdu";
+                    }
+                }
+            });
+            
+            // Mettre à jour l'affichage
+            document.getElementById('pot').textContent = userPoints;
+            updateBetsTable();
+            
+            // Avancer le joueur au tour suivant
+            const playerName = players[winner].querySelector('.player-name').textContent;
+            advancePlayer(matchId, playerName);
+        }
+
+        // Fonction pour avancer un joueur au tour suivant
+        function advancePlayer(matchId, playerName) {
+            // Logique pour avancer le joueur au prochain tour
+            // Cette partie nécessiterait une structure plus complexe pour un tournoi réel
+            console.log(`${playerName} avance au prochain tour depuis ${matchId}`);
+        }
+
+        // Initialiser l'application
+        updateBetsTable();
+    </script>
+</body>
+</html>
